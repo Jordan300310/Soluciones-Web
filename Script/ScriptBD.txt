@@ -1,0 +1,269 @@
+
+CREATE DATABASE fyj_erp_dev;
+-- ===================== IDENTIDAD & LOGIN =====================
+CREATE TABLE persona (
+  id_persona     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom_persona    VARCHAR(150) NOT NULL,
+  apat_persona   VARCHAR(100),
+  amat_persona   VARCHAR(100),
+  dni_persona    VARCHAR(15) UNIQUE,
+  cel_persona    VARCHAR(20),
+  em_persona     VARCHAR(150),
+  fe_persona     DATE
+);
+
+CREATE TABLE usuario (
+  id_usuario     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_persona     BIGINT NOT NULL UNIQUE
+                 REFERENCES persona(id_persona) ON UPDATE CASCADE ON DELETE CASCADE,
+  username       VARCHAR(120) NOT NULL UNIQUE,
+  password_hash  TEXT NOT NULL,
+  estado         INTEGER NOT NULL DEFAULT 1,              -- 1=activo
+  tipo           VARCHAR(10) NOT NULL CHECK (tipo IN ('CLI','EMP'))
+);
+
+CREATE TABLE direccion (
+  id_direccion       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_persona         BIGINT NOT NULL
+                     REFERENCES persona(id_persona) ON UPDATE CASCADE ON DELETE CASCADE,
+  etiqueta           VARCHAR(100),
+  linea1             VARCHAR(200) NOT NULL,
+  linea2             VARCHAR(200),
+  referencia         VARCHAR(200),
+  distrito           VARCHAR(100),
+  provincia          VARCHAR(100),
+  region             VARCHAR(100),
+  cp                 VARCHAR(15),
+  telefono_contacto  VARCHAR(20),
+  activo             BOOLEAN NOT NULL DEFAULT TRUE
+);
+CREATE INDEX idx_direccion_persona ON direccion(id_persona);
+
+-- ===================== SUBTIPOS (Opción 1: marcadores) =====================
+CREATE TABLE cliente (
+  id_persona_cl BIGINT PRIMARY KEY
+    REFERENCES persona(id_persona) ON UPDATE CASCADE ON DELETE RESTRICT,
+  est_cliente   INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE empleado (
+  id_persona_emp BIGINT PRIMARY KEY
+    REFERENCES persona(id_persona) ON UPDATE CASCADE ON DELETE RESTRICT,
+  est_empleado   INTEGER NOT NULL DEFAULT 1
+);
+
+-- ===================== CATÁLOGO =====================
+CREATE TABLE categoria (
+  id_categoria   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom_categoria  VARCHAR(150) NOT NULL UNIQUE
+);
+
+CREATE TABLE marca (
+  id_marca       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom_marca      VARCHAR(120) NOT NULL UNIQUE
+);
+
+CREATE TABLE producto (
+  id_producto    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_categoria   BIGINT NOT NULL REFERENCES categoria(id_categoria) ON UPDATE CASCADE ON DELETE RESTRICT,
+  id_marca       BIGINT NOT NULL REFERENCES marca(id_marca) ON UPDATE CASCADE ON DELETE RESTRICT,
+  cod_producto   VARCHAR(50) UNIQUE,
+  nom_producto   VARCHAR(200) NOT NULL,
+  des_producto   TEXT,
+  stk_producto   NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (stk_producto >= 0),
+  stock_min      NUMERIC(14,2) NOT NULL DEFAULT 0,
+  pco_producto   NUMERIC(14,2) NOT NULL CHECK (pco_producto >= 0),
+  pve_producto   NUMERIC(14,2) NOT NULL CHECK (pve_producto >= 0),
+  CONSTRAINT uq_producto_marca_nombre UNIQUE (id_marca, nom_producto)
+);
+CREATE INDEX idx_prod_categoria ON producto(id_categoria);
+CREATE INDEX idx_prod_marca     ON producto(id_marca);
+
+-- ===================== PEDIDO (venta delivery) =====================
+CREATE TABLE pedido (
+  id_pedido           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  num_pedido          TEXT UNIQUE,
+  fh_pedido           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  id_persona_cl       BIGINT NOT NULL REFERENCES persona(id_persona) ON UPDATE CASCADE ON DELETE RESTRICT,
+  id_direccion_envio  BIGINT NOT NULL REFERENCES direccion(id_direccion) ON UPDATE CASCADE ON DELETE RESTRICT,
+  costo_envio         NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (costo_envio >= 0),
+  estado              VARCHAR(12) NOT NULL
+                      CHECK (estado IN ('COTIZADO','CREADO','PAGADO','DESPACHADO','ENTREGADO','ANULADO')),
+  codigo_promo        VARCHAR(40),
+  descuento_total     NUMERIC(16,2) NOT NULL DEFAULT 0 CHECK (descuento_total >= 0)
+);
+CREATE INDEX idx_pedido_cliente  ON pedido(id_persona_cl);
+CREATE INDEX idx_pedido_estado   ON pedido(estado);
+CREATE INDEX idx_pedido_fecha    ON pedido(fh_pedido);
+
+CREATE TABLE pedido_detalle (
+  id_pedido_detalle   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_pedido           BIGINT NOT NULL REFERENCES pedido(id_pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_producto         BIGINT NOT NULL REFERENCES producto(id_producto) ON UPDATE CASCADE ON DELETE RESTRICT,
+  cantidad            NUMERIC(14,2) NOT NULL CHECK (cantidad > 0),
+  precio              NUMERIC(14,2) NOT NULL CHECK (precio >= 0),
+  CONSTRAINT uq_pdet UNIQUE (id_pedido, id_producto)
+);
+CREATE INDEX idx_pdet_pedido    ON pedido_detalle(id_pedido);
+CREATE INDEX idx_pdet_producto  ON pedido_detalle(id_producto);
+
+-- ===================== PAGO =====================
+CREATE TABLE pago (
+  id_pago         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_pedido       BIGINT NOT NULL REFERENCES pedido(id_pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+  fh_pago         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  monto           NUMERIC(16,2) NOT NULL CHECK (monto >= 0),
+  moneda          VARCHAR(3) NOT NULL DEFAULT 'PEN' CHECK (moneda ~ '^[A-Z]{3}$'),
+  metodo_pago     VARCHAR(20) NOT NULL CHECK (metodo_pago IN ('EFECTIVO','TARJETA','YAPE','PLIN')),
+  estado_pago     VARCHAR(12) NOT NULL CHECK (estado_pago IN ('PENDIENTE','APROBADO','FALLIDO')),
+  tipo_mov        VARCHAR(12) NOT NULL DEFAULT 'COBRO' CHECK (tipo_mov IN ('COBRO','DEVOLUCION')),
+  transaccion_ext TEXT
+);
+CREATE INDEX idx_pago_pedido ON pago(id_pedido);
+CREATE INDEX idx_pago_estado ON pago(estado_pago);
+
+-- ===================== ENVÍO / TRACKING =====================
+CREATE TABLE envio (
+  id_envio             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_pedido            BIGINT NOT NULL UNIQUE
+                       REFERENCES pedido(id_pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+  proveedor            VARCHAR(50),
+  tracking             TEXT,
+  estado               VARCHAR(15) NOT NULL DEFAULT 'PENDIENTE'
+                       CHECK (estado IN ('PENDIENTE','ASIGNADO','DESPACHADO','EN_RUTA','ENTREGADO','INCIDENCIA','CANCELADO')),
+  fh_estimado          TIMESTAMPTZ,
+  fh_despacho          TIMESTAMPTZ,
+  fh_entregado         TIMESTAMPTZ,
+  guia_serie           VARCHAR(10),
+  guia_numero          VARCHAR(20),
+  guia_fecha           DATE,
+  id_usuario_rep       BIGINT NULL REFERENCES usuario(id_usuario) ON UPDATE CASCADE ON DELETE SET NULL,
+  ultima_actualizacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_envio_estado ON envio(estado);
+CREATE INDEX idx_envio_rep    ON envio(id_usuario_rep);
+
+CREATE TABLE envio_evento (
+  id_envio_evento  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_envio         BIGINT NOT NULL REFERENCES envio(id_envio) ON UPDATE CASCADE ON DELETE CASCADE,
+  estado           VARCHAR(15) NOT NULL
+                   CHECK (estado IN ('PENDIENTE','ASIGNADO','DESPACHADO','EN_RUTA','ENTREGADO','INCIDENCIA','CANCELADO')),
+  mensaje          TEXT,
+  fh_evento        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_envio_evento_envio ON envio_evento(id_envio);
+CREATE INDEX idx_envio_evento_fh    ON envio_evento(fh_evento);
+
+-- ===================== COMPRAS / PROVEEDORES =====================
+CREATE TABLE proveedor (
+  id_proveedor    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom_proveedor   VARCHAR(150) NOT NULL,
+  ruc_proveedor   VARCHAR(20) UNIQUE,
+  telefono        VARCHAR(20),
+  email           VARCHAR(150)
+);
+
+CREATE TABLE compra (
+  id_compra       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  num_compra      TEXT UNIQUE,
+  fh_compra       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  id_proveedor    BIGINT NOT NULL REFERENCES proveedor(id_proveedor) ON UPDATE CASCADE ON DELETE RESTRICT,
+  estado          VARCHAR(12) NOT NULL CHECK (estado IN ('REGISTRADA','RECIBIDA','ANULADA'))
+);
+CREATE INDEX idx_compra_proveedor ON compra(id_proveedor);
+CREATE INDEX idx_compra_estado    ON compra(estado);
+CREATE INDEX idx_compra_fecha     ON compra(fh_compra);
+
+CREATE TABLE compra_detalle (
+  id_compra_detalle  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_compra          BIGINT NOT NULL REFERENCES compra(id_compra) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_producto        BIGINT NOT NULL REFERENCES producto(id_producto) ON UPDATE CASCADE ON DELETE RESTRICT,
+  cantidad           NUMERIC(14,2) NOT NULL CHECK (cantidad > 0),
+  precio             NUMERIC(14,2) NOT NULL CHECK (precio >= 0),
+  CONSTRAINT uq_cdet UNIQUE (id_compra, id_producto)
+);
+CREATE INDEX idx_cdet_compra   ON compra_detalle(id_compra);
+CREATE INDEX idx_cdet_producto ON compra_detalle(id_producto);
+
+-- ===================== COMPROBANTES (mínimo con SUNAT) =====================
+CREATE TABLE comprobante (
+  id_comprobante  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  tipo            VARCHAR(12) NOT NULL CHECK (tipo IN ('BOLETA','FACTURA','TICKET')),
+  estado          VARCHAR(12) NOT NULL CHECK (estado IN ('EMITIDO','ANULADO')),
+  serie           VARCHAR(10),
+  numero          VARCHAR(20),
+  fecha_emision   DATE NOT NULL DEFAULT CURRENT_DATE,
+  moneda          VARCHAR(3) NOT NULL DEFAULT 'PEN' CHECK (moneda ~ '^[A-Z]{3}$'),
+  subtotal        NUMERIC(16,2) NOT NULL DEFAULT 0 CHECK (subtotal >= 0),
+  igv             NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (igv >= 0),
+  total           NUMERIC(16,2) NOT NULL CHECK (total >= 0),
+  hashcpe         TEXT,
+  sunat_estado    VARCHAR(12) DEFAULT 'PENDIENTE' CHECK (sunat_estado IN ('PENDIENTE','ACEPTADO','RECHAZADO')),
+  receptor_doc_tipo   VARCHAR(3),
+  receptor_doc_numero VARCHAR(20),
+  CONSTRAINT uq_cpe UNIQUE (tipo, serie, numero)
+);
+
+CREATE TABLE comprobante_pedido (
+  id_comprobante  BIGINT PRIMARY KEY
+                  REFERENCES comprobante(id_comprobante) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_pedido       BIGINT NOT NULL UNIQUE
+                  REFERENCES pedido(id_pedido) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+CREATE INDEX idx_cpe_pedido ON comprobante_pedido(id_pedido);
+
+CREATE TABLE comprobante_compra (
+  id_comprobante  BIGINT PRIMARY KEY
+                  REFERENCES comprobante(id_comprobante) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_compra       BIGINT NOT NULL UNIQUE
+                  REFERENCES compra(id_compra) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+CREATE INDEX idx_cpe_compra ON comprobante_compra(id_compra);
+
+-- ===================== MARKETING (promos/cupones/combos) =====================
+CREATE TABLE promocion (
+  id_promocion  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre        VARCHAR(150) NOT NULL,
+  tipo          VARCHAR(12)  NOT NULL CHECK (tipo IN ('DESC_PORC','DESC_FIJO','COMBO','CUPON')),
+  alcance       VARCHAR(12)  NOT NULL CHECK (alcance IN ('GLOBAL','PRODUCTO','CATEGORIA')),
+  valor         NUMERIC(14,2),        -- % para DESC_PORC (0–100) o monto para DESC_FIJO/CUPON
+  precio_combo  NUMERIC(14,2),        -- para COMBO
+  codigo        VARCHAR(40),          -- requerido si tipo=CUPON
+  fecha_ini     TIMESTAMPTZ NOT NULL,
+  fecha_fin     TIMESTAMPTZ NOT NULL,
+  activo        BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE promocion_detalle (
+  id_promocion_detalle BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_promocion         BIGINT NOT NULL REFERENCES promocion(id_promocion) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_producto          BIGINT NULL REFERENCES producto(id_producto) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_categoria         BIGINT NULL REFERENCES categoria(id_categoria) ON UPDATE CASCADE ON DELETE CASCADE,
+  cantidad             NUMERIC(14,2) NOT NULL DEFAULT 1 CHECK (cantidad > 0),
+  CONSTRAINT ck_promo_target CHECK (id_producto IS NOT NULL OR id_categoria IS NOT NULL)
+);
+CREATE INDEX idx_promo_det_promocion ON promocion_detalle(id_promocion);
+
+-- ===================== POST-VENTA (reclamos/devoluciones/cambios) =====================
+CREATE TABLE postventa_ticket (
+  id_ticket     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_pedido     BIGINT NOT NULL REFERENCES pedido(id_pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+  tipo          VARCHAR(12) NOT NULL CHECK (tipo IN ('RECLAMO','DEVOLUCION','CAMBIO')),
+  estado        VARCHAR(12) NOT NULL DEFAULT 'ABIERTO'
+                CHECK (estado IN ('ABIERTO','EN_PROCESO','RESUELTO','CERRADO')),
+  motivo        TEXT,
+  calificacion  INTEGER CHECK (calificacion BETWEEN 1 AND 5),
+  fh_creado     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  fh_cierre     TIMESTAMPTZ
+);
+CREATE INDEX idx_ticket_pedido ON postventa_ticket(id_pedido);
+CREATE INDEX idx_ticket_estado ON postventa_ticket(estado);
+
+CREATE TABLE postventa_item (
+  id_postventa_item BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_ticket         BIGINT NOT NULL REFERENCES postventa_ticket(id_ticket) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_producto       BIGINT NOT NULL REFERENCES producto(id_producto) ON UPDATE CASCADE ON DELETE RESTRICT,
+  cantidad          NUMERIC(14,2) NOT NULL CHECK (cantidad > 0),
+  comentario        TEXT
+);
+CREATE INDEX idx_postventa_item_ticket ON postventa_item(id_ticket);
