@@ -267,3 +267,12 @@ CREATE TABLE postventa_item (
   comentario        TEXT
 );
 CREATE INDEX idx_postventa_item_ticket ON postventa_item(id_ticket);
+
+ALTER TABLE categoria
+  ADD COLUMN IF NOT EXISTS estado integer NOT NULL DEFAULT 1;
+
+ ALTER TABLE producto
+  ADD COLUMN est_producto SMALLINT NOT NULL DEFAULT 1;
+
+
+## Faltar Fixear algunas cosas, añadir descripcion a marca y categoria y añadir estado a marca. pero los flujos ya funcionan

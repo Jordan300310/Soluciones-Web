@@ -33,7 +33,8 @@ public class PersonaController {
   }
 
   @PutMapping("/{idPersona}")
-  public PersonaResponse actualizar(@PathVariable Long idPersona, @Valid @RequestBody PersonaRequest req) {
+  public PersonaResponse actualizar(@PathVariable Long idPersona, 
+                                    @Valid @RequestBody PersonaRequest req) {
     return service.actualizar(idPersona, req);
   }
   @PatchMapping("/{idPersona}")
