@@ -56,11 +56,15 @@ CREATE TABLE empleado (
 CREATE TABLE categoria (
   id_categoria   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nom_categoria  VARCHAR(150) NOT NULL UNIQUE
+  des_categoria TEXT,
+  est_categoria INTEGER NOT NULL DEFAULT 1;
 );
 
 CREATE TABLE marca (
   id_marca       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  nom_marca      VARCHAR(120) NOT NULL UNIQUE
+  nom_marca
+  des_marca TEXT,
+  est_marca INTEGER NOT NULL DEFAULT 1;      VARCHAR(120) NOT NULL UNIQUE
 );
 
 CREATE TABLE producto (
@@ -71,9 +75,9 @@ CREATE TABLE producto (
   nom_producto   VARCHAR(200) NOT NULL,
   des_producto   TEXT,
   stk_producto   NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (stk_producto >= 0),
-  stock_min      NUMERIC(14,2) NOT NULL DEFAULT 0,
   pco_producto   NUMERIC(14,2) NOT NULL CHECK (pco_producto >= 0),
   pve_producto   NUMERIC(14,2) NOT NULL CHECK (pve_producto >= 0),
+  est_producto   SMALLINT NOT NULL DEFAULT 1;
   CONSTRAINT uq_producto_marca_nombre UNIQUE (id_marca, nom_producto)
 );
 CREATE INDEX idx_prod_categoria ON producto(id_categoria);
@@ -268,11 +272,3 @@ CREATE TABLE postventa_item (
 );
 CREATE INDEX idx_postventa_item_ticket ON postventa_item(id_ticket);
 
-ALTER TABLE categoria
-  ADD COLUMN IF NOT EXISTS estado integer NOT NULL DEFAULT 1;
-
- ALTER TABLE producto
-  ADD COLUMN est_producto SMALLINT NOT NULL DEFAULT 1;
-
-
-## Faltar Fixear algunas cosas, añadir descripcion a marca y categoria y añadir estado a marca. pero los flujos ya funcionan

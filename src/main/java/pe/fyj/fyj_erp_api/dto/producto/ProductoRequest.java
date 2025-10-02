@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import pe.fyj.fyj_erp_api.entity.catalogo.Categoria;
 import pe.fyj.fyj_erp_api.entity.catalogo.Marca;
 import pe.fyj.fyj_erp_api.entity.producto.Producto;
+import static pe.fyj.fyj_erp_api.shared.Estados.normalizeEstado;
 
 public record ProductoRequest(
     Long idCategoria,
@@ -26,7 +27,7 @@ public record ProductoRequest(
     p.setPcoProducto(pcoProducto);
     p.setPveProducto(pveProducto);
     p.setStkProducto(stkProducto);
-    p.setEstProducto(estProducto == null ? 1 : estProducto);
+    p.setEstProducto(normalizeEstado(estProducto, null));
     return p;
   }
 
@@ -39,6 +40,6 @@ public record ProductoRequest(
     p.setPcoProducto(pcoProducto);
     p.setPveProducto(pveProducto);
     p.setStkProducto(stkProducto);
-    p.setEstProducto(estProducto == null ? p.getEstProducto() : estProducto);
+    p.setEstProducto(normalizeEstado(estProducto, p.getEstProducto()));
   }
 }

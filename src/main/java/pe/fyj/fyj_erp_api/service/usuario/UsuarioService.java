@@ -5,7 +5,7 @@ import pe.fyj.fyj_erp_api.dto.usuario.*;
 
 public interface UsuarioService {
   List<UsuarioResponse> listar();
-  UsuarioResponse registrarCliente(UsuarioRequest req);  // siempre 'CLI'
-  UsuarioResponse registrarEmpleado(UsuarioRequest req); // siempre 'EMP'
+  UsuarioResponse registrarCliente(UsuarioRequest req);  
+  UsuarioResponse registrarEmpleado(UsuarioRequest req); 
   UsuarioResponse login(LoginRequest req);
 }

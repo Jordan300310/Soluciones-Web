@@ -8,8 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 import pe.fyj.fyj_erp_api.dto.producto.*;
-import pe.fyj.fyj_erp_api.entity.catalogo.Categoria;
-import pe.fyj.fyj_erp_api.entity.catalogo.Marca;
 import pe.fyj.fyj_erp_api.repository.catalogo.CategoriaRepository;
 import pe.fyj.fyj_erp_api.repository.catalogo.MarcaRepository;
 import pe.fyj.fyj_erp_api.repository.producto.ProductoRepository;
