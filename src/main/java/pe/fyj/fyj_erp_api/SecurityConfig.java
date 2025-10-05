@@ -25,6 +25,7 @@ public class SecurityConfig {
       .cors(Customizer.withDefaults())
       .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
       .authorizeHttpRequests(auth -> auth
+        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
