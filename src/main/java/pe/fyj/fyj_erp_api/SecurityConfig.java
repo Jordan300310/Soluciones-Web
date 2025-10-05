@@ -29,7 +29,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-        .anyRequest().authenticated()
+        .anyRequest().permitAll()
       )
       .formLogin(form -> form.disable())
       .httpBasic(basic -> basic.disable())
