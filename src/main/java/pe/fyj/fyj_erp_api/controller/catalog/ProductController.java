@@ -15,7 +15,7 @@ import pe.fyj.fyj_erp_api.service.catalog.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/producto")
 public class ProductController {
 
   private final ProductService service;
@@ -35,7 +35,7 @@ public class ProductController {
   }
 
   // ===== CLIENT =====
-  @GetMapping("/client")
+  @GetMapping("/cliente")
   public ResponseEntity<List<ProductDTO>> listClient(@RequestParam(required = false) String q,
                                                      HttpSession session) {
     AuthGuard.requireCliente(session);
@@ -44,13 +44,13 @@ public class ProductController {
     return ResponseEntity.ok(list);
   }
 
-  @GetMapping("/client/{id}")
+  @GetMapping("/cliente/{id}")
   public ResponseEntity<ProductDTO> getClient(@PathVariable Long id, HttpSession session) {
     AuthGuard.requireCliente(session);
     return ResponseEntity.ok(ProductDTO.from(service.getOneOrNotFound(id)));
   }
 
-  // ===== ADMIN (CRUD) =====
+  // ===== ADMIN  =====
   @GetMapping("/admin")
   public ResponseEntity<List<ProductAdminDTO>> listAdmin(@RequestParam(required = false) String q,
                                                          @RequestParam(required = false) Boolean estado,
@@ -96,7 +96,7 @@ public class ProductController {
   @DeleteMapping("/admin/{id}")
   public ResponseEntity<Void> deleteAdmin(@PathVariable Long id, HttpSession session) {
     AuthGuard.requireEmpleado(session);
-    service.deleteLogical(id);
+    service.delete(id);
     return ResponseEntity.noContent().build();
   }
 }
