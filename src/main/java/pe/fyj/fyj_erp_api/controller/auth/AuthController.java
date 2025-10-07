@@ -30,10 +30,9 @@ public class AuthController {
 
    @PostMapping("/auth/login")
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session) {
-    authService.login(request, session);
-
-    SessionUser su = (SessionUser) session.getAttribute(AuthServiceImpl.SESSION_KEY);
-    String tipo = su != null ? su.getTipo() : "desconocido";
+    SessionUser su = authService.login(request);
+    session.setAttribute(AuthServiceImpl.SESSION_KEY, su);
+    String tipo = su.getTipo();
     String message = 
         ("cliente".equalsIgnoreCase(tipo) ? "Login exitoso: cliente"
         :"empleado".equalsIgnoreCase(tipo) ? "Login exitoso: empleado" 
@@ -44,7 +43,7 @@ public class AuthController {
 
   @PostMapping("/auth/logout")
   public ResponseEntity<Void> logout(HttpSession session) {
-    authService.logout(session);
+    session.invalidate();
     return ResponseEntity.noContent().build();
   }
 

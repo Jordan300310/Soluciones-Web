@@ -1,12 +1,11 @@
 package pe.fyj.fyj_erp_api.service.auth;
 
-import jakarta.servlet.http.HttpSession;
 import pe.fyj.fyj_erp_api.dto.auth.LoginRequest;
 import pe.fyj.fyj_erp_api.dto.auth.RegisterRequest;
 import pe.fyj.fyj_erp_api.dto.auth.RegisterResponse;
+import pe.fyj.fyj_erp_api.models.auth.SessionUser;
 
 public interface AuthService {
-  void login(LoginRequest request, HttpSession session);
-  void logout(HttpSession session);
+  SessionUser login(LoginRequest request);
   RegisterResponse register(RegisterRequest request);
 }
