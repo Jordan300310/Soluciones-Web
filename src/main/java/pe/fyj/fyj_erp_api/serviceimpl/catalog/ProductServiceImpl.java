@@ -22,7 +22,8 @@ public class ProductServiceImpl implements ProductService {
   private final ProductoRepository repo;
   private final ProveedorRepository proveedorRepo;
 
-  public ProductServiceImpl(ProductoRepository repo, ProveedorRepository proveedorRepo) {
+  public ProductServiceImpl(ProductoRepository repo, 
+                            ProveedorRepository proveedorRepo) {
     this.repo = repo;
     this.proveedorRepo = proveedorRepo;
   }
@@ -93,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   @Transactional
-  public void deleteLogical(Long id) {
+  public void delete(Long id) {
     changeEstado(id, false);
   }
 }

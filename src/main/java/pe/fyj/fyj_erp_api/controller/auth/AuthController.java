@@ -34,9 +34,10 @@ public class AuthController {
 
     SessionUser su = (SessionUser) session.getAttribute(AuthServiceImpl.SESSION_KEY);
     String tipo = su != null ? su.getTipo() : "desconocido";
-    String message = "cliente".equalsIgnoreCase(tipo)
-        ? "Login exitoso: cliente"
-        : ("empleado".equalsIgnoreCase(tipo) ? "Login exitoso: empleado" : "Login exitoso");
+    String message = 
+        ("cliente".equalsIgnoreCase(tipo) ? "Login exitoso: cliente"
+        :"empleado".equalsIgnoreCase(tipo) ? "Login exitoso: empleado" 
+        :"Login exitoso");
 
     return ResponseEntity.ok(new LoginResponse(message, tipo));
   }

@@ -14,5 +14,5 @@ public interface ProductService {
   Producto update(Long id, ProductUpsertRequest req);
 
   void changeEstado(Long id, boolean estado);
-  void deleteLogical(Long id);
+  void delete(Long id);
 }
