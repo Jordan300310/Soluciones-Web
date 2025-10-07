@@ -9,19 +9,26 @@ public record ProductUpsertRequest(
     String descripcion,
     @NotNull @DecimalMin(value = "0.0", inclusive = true) BigDecimal precio,
     @NotNull @Min(0) Integer stock,
-    Boolean estado
+    Boolean estado,
+    Long proveedorId 
 ) {
-  public Producto toNewEntity() {
+  public Producto toNewEntityWithProveedorId(Long provId) {
     var p = new Producto();
     applyTo(p);
-    if (p.getEstado() == null) p.setEstado(Boolean.TRUE);
+    if (this.estado == null) {
+      p.setEstado(true); 
+    }
+    p.setIdProveedor(provId);
     return p;
   }
   public void applyTo(Producto p) {
-    p.setNombre(nombre);
-    p.setDescripcion(descripcion);
-    p.setPrecio(precio);
-    p.setStock(stock);
+    if (nombre != null) p.setNombre(nombre);
+    if (descripcion != null) p.setDescripcion(descripcion);
+    if (precio != null) p.setPrecio(precio);
+    if (stock != null) p.setStock(stock);
     if (estado != null) p.setEstado(estado);
+  }
+  public void applyProveedorId(Producto p, Long provId) {
+    p.setIdProveedor(provId);
   }
 }

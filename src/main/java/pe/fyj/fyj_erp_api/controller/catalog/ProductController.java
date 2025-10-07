@@ -25,8 +25,7 @@ public class ProductController {
   @GetMapping
   public ResponseEntity<List<ProductDTO>> listPublic(@RequestParam(required = false) String q) {
     var list = service.list(ProductListRequest.PUBLIC, q, null).stream()
-        .map(ProductDTO::from)
-        .toList();
+        .map(ProductDTO::from).toList();
     return ResponseEntity.ok(list);
   }
 
@@ -41,8 +40,7 @@ public class ProductController {
                                                      HttpSession session) {
     AuthGuard.requireCliente(session);
     var list = service.list(ProductListRequest.CLIENT, q, null).stream()
-        .map(ProductDTO::from)
-        .toList();
+        .map(ProductDTO::from).toList();
     return ResponseEntity.ok(list);
   }
 
@@ -59,8 +57,7 @@ public class ProductController {
                                                          HttpSession session) {
     AuthGuard.requireEmpleado(session);
     var list = service.list(ProductListRequest.ADMIN, q, estado).stream()
-        .map(ProductAdminDTO::from)
-        .toList();
+        .map(ProductAdminDTO::from).toList();
     return ResponseEntity.ok(list);
   }
 
@@ -74,7 +71,7 @@ public class ProductController {
   public ResponseEntity<ProductAdminDTO> createAdmin(@Valid @RequestBody ProductUpsertRequest req,
                                                      HttpSession session) {
     AuthGuard.requireEmpleado(session);
-    var saved = service.create(req);
+    var saved = service.create(req); // valida proveedorId activo y guarda id
     return ResponseEntity.status(201).body(ProductAdminDTO.from(saved));
   }
 
@@ -83,7 +80,7 @@ public class ProductController {
                                                      @Valid @RequestBody ProductUpsertRequest req,
                                                      HttpSession session) {
     AuthGuard.requireEmpleado(session);
-    var updated = service.update(id, req);
+    var updated = service.update(id, req); // valida si viene proveedorId y lo aplica
     return ResponseEntity.ok(ProductAdminDTO.from(updated));
   }
 

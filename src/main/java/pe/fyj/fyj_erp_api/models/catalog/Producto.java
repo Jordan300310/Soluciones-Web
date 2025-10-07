@@ -2,6 +2,7 @@ package pe.fyj.fyj_erp_api.models.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -26,10 +27,10 @@ public class Producto {
   @Column(name = "stock", nullable = false)
   private Integer stock;
 
-  // No mapeamos Proveedor como entidad — guardamos solo el ID (opcional)
   @Column(name = "id_proveedor")
   private Long idProveedor;
 
   @Column(name = "estado")
   private Boolean estado = true;
+
 }
