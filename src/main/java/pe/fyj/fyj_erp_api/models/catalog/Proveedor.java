@@ -1,4 +1,4 @@
-package pe.fyj.fyj_erp_api.models.purchase;
+package pe.fyj.fyj_erp_api.models.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,16 +6,16 @@ import pe.fyj.fyj_erp_api.models.auth.Persona;
 
 @Entity
 @Table(name = "proveedor")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @Setter @NoArgsConstructor
 public class Proveedor {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_proveedor")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_persona")
+  @ManyToOne
+  @JoinColumn(name = "id_persona") // si no usas persona, puedes dejarlo null
   private Persona persona;
 
   @Column(name = "razon_social", length = 150)
@@ -25,5 +25,5 @@ public class Proveedor {
   private String ruc;
 
   @Column(name = "estado")
-  private Boolean estado; 
+  private Boolean estado = true;
 }

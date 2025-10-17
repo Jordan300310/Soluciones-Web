@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 @Table(name = "producto")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Producto {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_producto")
@@ -30,7 +29,12 @@ public class Producto {
   @Column(name = "id_proveedor")
   private Long idProveedor;
 
-  @Column(name = "estado")
-  private Boolean estado = true;
+  @Column(name = "id_marca")
+  private Long idMarca;
 
+  @Column(name = "id_categoria")
+  private Long idCategoria;
+
+  @Column(name = "estado", nullable = false)
+  private Boolean estado = true;
 }

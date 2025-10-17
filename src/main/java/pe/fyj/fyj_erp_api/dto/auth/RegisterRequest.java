@@ -3,21 +3,20 @@ package pe.fyj.fyj_erp_api.dto.auth;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import pe.fyj.fyj_erp_api.models.auth.Cliente;
 import pe.fyj.fyj_erp_api.models.auth.Persona;
 import pe.fyj.fyj_erp_api.models.auth.Usuario;
 
 public record RegisterRequest(
-    @NotBlank @Size(max = 150) String nombres,
+    @NotBlank String nombres,
     String apat,
     String amat,
-    @NotBlank @Size(max = 15) String dni,
+    @NotBlank String dni,
     String celular,
     String email,
     LocalDate fechaNacimiento,
-    @NotBlank @Size(max = 50) String username,
-    @NotBlank @Size(min = 6, max = 100) String password
+    @NotBlank String username,
+    @NotBlank String password
 ) {
   public Persona toPersona() {
     Persona p = new Persona();

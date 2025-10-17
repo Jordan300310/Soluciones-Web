@@ -1,9 +1,7 @@
 package pe.fyj.fyj_erp_api.models.auth;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity @Table(name = "cliente")
 @Getter @Setter @NoArgsConstructor

@@ -18,7 +18,7 @@ public class Usuario {
   private Persona persona;
 
   @Column(name = "tipo", nullable = false, length = 20)
-  private String tipo; // 'cliente' | 'empleado'
+  private String tipo; 
 
   @Column(name = "username", nullable = false, unique = true, length = 50)
   private String username;
