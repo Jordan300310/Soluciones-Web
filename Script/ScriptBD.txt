@@ -174,3 +174,35 @@ INSERT INTO estado_pago (nombre_estado) VALUES ('PENDIENTE'), ('PAGADO'), ('RECH
 INSERT INTO estado_envio (nombre_estado) VALUES ('PREPARANDO'), ('EN RUTA'), ('ENTREGADO');
 INSERT INTO estado_ticket (nombre_estado) VALUES ('ABIERTO'), ('EN ATENCIÓN'), ('CERRADO');
 
+
+-- ======================================
+-- marca - categoria
+-- ======================================
+CREATE TABLE marca (
+  id_marca      SERIAL PRIMARY KEY,
+  nombre_marca  VARCHAR(120) NOT NULL UNIQUE,
+  estado        BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE categoria (
+  id_categoria      SERIAL PRIMARY KEY,
+  nombre_categoria  VARCHAR(120) NOT NULL UNIQUE,
+  estado            BOOLEAN DEFAULT TRUE
+);
+
+
+ALTER TABLE producto
+  ADD COLUMN id_marca INT,
+  ADD COLUMN id_categoria INT;
+
+ALTER TABLE producto
+  ADD CONSTRAINT fk_producto_marca
+    FOREIGN KEY (id_marca)
+    REFERENCES marca(id_marca)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  ADD CONSTRAINT fk_producto_categoria
+    FOREIGN KEY (id_categoria)
+    REFERENCES categoria(id_categoria)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL;
