@@ -17,9 +17,11 @@ public class AdminProductoController {
   public AdminProductoController(AdminProductoService service) { this.service = service; }
 
   @PostMapping
-  public ResponseEntity<Producto> create(@RequestBody Producto body) {
+  @Transactional
+  public ResponseEntity<ProductAdminDTO> create(@RequestBody Producto body) {
     var p = service.create(body);
-    return ResponseEntity.created(URI.create("/admin/productos/" + p.getId())).body(p);
+    return ResponseEntity.created(URI.create("/admin/productos/" + p.getId()))
+                        .body(ProductAdminDTO.from(p));
   }
 
   @GetMapping

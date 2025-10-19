@@ -1,5 +1,5 @@
 package pe.fyj.fyj_erp_api.models.catalog;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,15 +37,18 @@ public class Producto {
 
   @Column(name = "estado", nullable = false)
   private Boolean estado = true;
-
+  
+  @Schema(hidden = true)
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_marca", insertable = false, updatable = false)
   private Marca marca;
 
+  @Schema(hidden = true)
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_categoria", insertable = false, updatable = false)
   private Categoria categoria;
 
+  @Schema(hidden = true)
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_proveedor", insertable = false, updatable = false)
   private Proveedor proveedor;
