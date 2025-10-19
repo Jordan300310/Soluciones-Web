@@ -3,13 +3,10 @@ package pe.fyj.fyj_erp_api.models.shipping;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "estado_envio")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Entity @Table(name = "estado_envio")
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class EstadoEnvio {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_estado_envio")
   private Long id;
 

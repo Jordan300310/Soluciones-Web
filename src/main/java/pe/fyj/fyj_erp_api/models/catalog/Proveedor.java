@@ -15,7 +15,7 @@ public class Proveedor {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "id_persona") // si no usas persona, puedes dejarlo null
+  @JoinColumn(name = "id_persona") 
   private Persona persona;
 
   @Column(name = "razon_social", length = 150)

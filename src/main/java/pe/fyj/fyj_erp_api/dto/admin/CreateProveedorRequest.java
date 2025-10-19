@@ -6,7 +6,6 @@ import pe.fyj.fyj_erp_api.models.auth.Persona;
 import pe.fyj.fyj_erp_api.models.catalog.Proveedor;
 
 public record CreateProveedorRequest(
-  // Persona
   String nombres,
   String apat,
   String amat,
@@ -14,7 +13,6 @@ public record CreateProveedorRequest(
   String celular,
   String email,
   LocalDate fechaNacimiento,
-  // Proveedor
   String razonSocial,
   String ruc,
   Boolean estado

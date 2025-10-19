@@ -8,7 +8,6 @@ import pe.fyj.fyj_erp_api.models.auth.Usuario;
 import pe.fyj.fyj_erp_api.models.auth.Empleado;
 
 public record CreateEmpleadoRequest(
-  // Persona
   String nombres,
   String apat,
   String amat,

@@ -1,12 +1,11 @@
 package pe.fyj.fyj_erp_api.controller.catalog;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import pe.fyj.fyj_erp_api.models.catalog.Categoria;
 import pe.fyj.fyj_erp_api.models.catalog.Marca;
-import pe.fyj.fyj_erp_api.models.catalog.Producto;
 import pe.fyj.fyj_erp_api.service.catalog.CatalogService;
-
+import pe.fyj.fyj_erp_api.dto.catalog.ProductCatalogDTO;
 import java.util.List;
 
 @RestController
@@ -22,12 +21,14 @@ public class CatalogController {
   public List<Categoria> categories() { return service.listCategories(); }
 
   @GetMapping("/products")
-  public Page<Producto> products(
+  @Transactional(readOnly = true)
+  public Page<ProductCatalogDTO> products(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(name = "brand_id", required = false) Long brandId,
       @RequestParam(name = "category_id", required = false) Long categoryId
   ) {
-    return service.listProducts(page, size, brandId, categoryId);
+    return service.listProducts(page, size, brandId, categoryId)
+                  .map(ProductCatalogDTO::from);
   }
 }

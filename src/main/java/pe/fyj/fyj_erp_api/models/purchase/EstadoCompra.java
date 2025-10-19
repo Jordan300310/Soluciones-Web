@@ -3,13 +3,10 @@ package pe.fyj.fyj_erp_api.models.purchase;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "estado_compra")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Entity @Table(name = "estado_compra")
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class EstadoCompra {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_estado_compra")
   private Long id;
 

@@ -5,29 +5,23 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import pe.fyj.fyj_erp_api.models.auth.Cliente;
-
-@Entity
+@Entity 
 @Table(name = "pedido")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Pedido {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_pedido")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "id_cliente", nullable = false)
-  private Cliente cliente;
+  @Column(name = "id_cliente", nullable = false)
+  private Long idCliente;
 
-  @Column(name = "fecha_pedido", nullable = false)
-  private LocalDateTime fechaPedido = LocalDateTime.now();
+  @Column(name = "fecha_pedido")
+  private LocalDateTime fechaPedido;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "id_estado_pedido", nullable = false)
-  private EstadoPedido estadoPedido;
+  @Column(name = "id_estado_pedido")
+  private Long idEstadoPedido;
 
-  @Column(name = "total", nullable = false, precision = 14, scale = 2)
+  @Column(name = "total", precision = 14, scale = 2, nullable = false)
   private BigDecimal total;
 }
