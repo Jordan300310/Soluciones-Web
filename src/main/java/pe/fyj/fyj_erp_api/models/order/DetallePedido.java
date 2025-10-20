@@ -23,4 +23,6 @@ public class DetallePedido {
 
   @Column(name = "subtotal", precision = 14, scale = 2, nullable = false)
   private BigDecimal subtotal;
+  @Column(name = "precio_unitario", precision = 14, scale = 2, nullable = false)
+  private BigDecimal precioUnitario;
 }

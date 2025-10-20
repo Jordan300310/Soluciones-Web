@@ -206,3 +206,6 @@ ALTER TABLE producto
     REFERENCES categoria(id_categoria)
     ON UPDATE CASCADE
     ON DELETE SET NULL;
+
+  ALTER TABLE detalle_pedido
+  ADD COLUMN precio_unitario NUMERIC(14,2);
