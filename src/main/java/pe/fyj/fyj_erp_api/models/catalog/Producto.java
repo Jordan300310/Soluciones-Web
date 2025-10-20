@@ -35,7 +35,7 @@ public class Producto {
   @Column(name = "id_categoria")
   private Long idCategoria;
 
-  @Column(name = "imagen_url", length = 150)
+  @Column(name = "imagen_url", length = 500)
   private String imagen;
 
   @Column(name = "estado", nullable = false)
