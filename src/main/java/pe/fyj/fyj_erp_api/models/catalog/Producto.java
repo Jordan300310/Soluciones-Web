@@ -35,6 +35,9 @@ public class Producto {
   @Column(name = "id_categoria")
   private Long idCategoria;
 
+  @Column(name = "imagen_url", length = 150)
+  private String imagen;
+
   @Column(name = "estado", nullable = false)
   private Boolean estado = true;
   

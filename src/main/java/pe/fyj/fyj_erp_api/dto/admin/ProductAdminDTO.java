@@ -9,6 +9,7 @@ public record ProductAdminDTO(
     String descripcion,
     BigDecimal precio,
     Integer stock,
+    String imagen,
     Boolean estado,
     Ref marca,
     Ref categoria,
@@ -26,7 +27,7 @@ public record ProductAdminDTO(
     }
     return new ProductAdminDTO(
         p.getId(), p.getNombre(), p.getDescripcion(),
-        p.getPrecio(), p.getStock(), p.getEstado(),
+        p.getPrecio(), p.getStock(),p.getImagen(), p.getEstado(),
         m, c, prov
     );
   }

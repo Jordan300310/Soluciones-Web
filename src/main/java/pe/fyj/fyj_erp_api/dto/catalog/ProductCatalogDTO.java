@@ -9,6 +9,7 @@ public record ProductCatalogDTO(
     String descripcion,
     BigDecimal precio,
     Integer stock,
+    String imagen,
     Ref marca,
     Ref categoria
 ) {
@@ -17,7 +18,7 @@ public record ProductCatalogDTO(
     Ref c = (p.getCategoria()!=null) ? new Ref(p.getCategoria().getId(), p.getCategoria().getNombre()) : null;
     return new ProductCatalogDTO(
         p.getId(), p.getNombre(), p.getDescripcion(),
-        p.getPrecio(), p.getStock(), m, c
+        p.getPrecio(), p.getStock(),p.getImagen(), m, c
     );
   }
 

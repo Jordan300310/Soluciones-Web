@@ -32,6 +32,7 @@ public class AdminProductoService {
     if (in.getDescripcion() != null) db.setDescripcion(in.getDescripcion());
     if (in.getPrecio() != null) db.setPrecio(in.getPrecio());
     if (in.getStock() != null) db.setStock(in.getStock());
+    if (in.getImagen() != null) db.setImagen(in.getImagen());
     if (in.getIdMarca() != null) db.setIdMarca(in.getIdMarca());
     if (in.getIdCategoria() != null) db.setIdCategoria(in.getIdCategoria());
     if (in.getIdProveedor() != null) db.setIdProveedor(in.getIdProveedor());
