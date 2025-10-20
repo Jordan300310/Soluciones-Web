@@ -47,4 +47,12 @@ public class AuthController {
     session.invalidate();
     return ResponseEntity.noContent().build();
   }
+  @GetMapping("/auth/me")
+  public ResponseEntity<SessionUser> me(HttpSession session) {
+    SessionUser su = (SessionUser) session.getAttribute(AuthService.SESSION_KEY);
+    if (su == null || !su.isEnabled()) {
+      return ResponseEntity.status(401).build();
+    }
+    return ResponseEntity.ok(su);
+}
 }

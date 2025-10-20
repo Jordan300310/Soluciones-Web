@@ -106,7 +106,7 @@ CREATE TABLE categoria (
   nombre_categoria  VARCHAR(120) NOT NULL UNIQUE,
   estado            BOOLEAN DEFAULT TRUE
 );
-
+////////////////////7777
 
 CREATE TABLE pedido (
   id_pedido SERIAL PRIMARY KEY,
